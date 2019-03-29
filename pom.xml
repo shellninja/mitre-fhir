@@ -1,0 +1,179 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mitre.fhir</groupId>
+    <artifactId>mitre-fhir-server</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>MITRE HAPI FHIR Server</name>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <hapi.version>3.7.0</hapi.version>
+    </properties>
+
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>oss-snapshots</id>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
+            <!--<url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
+
+    <dependencies>
+        <!-- HAPI-FHIR core classes. -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-base</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+
+        <!-- HAPI-FHIR JPA server, model, and data structures. -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-jpaserver-base</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-jpaserver-model</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu3</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+
+        <!-- HAPI-FHIR tester web app overlay. Delete if not needed. -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-testpage-overlay</artifactId>
+            <version>${hapi.version}</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-testpage-overlay</artifactId>
+            <version>${hapi.version}</version>
+            <classifier>classes</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Required for Jetty to work with websockets. -->
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+            <version>9.4.7.v20170914</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <version>9.4.7.v20170914</version>
+        </dependency>
+
+        <!-- Required for logging to work. -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+
+        <!-- Required for JEE/Servlet support. -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+            <version>3.0.1</version>
+        </dependency>
+
+        <!-- Required CORS support. -->
+        <dependency>
+            <groupId>org.ebaysf.web</groupId>
+            <artifactId>cors-filter</artifactId>
+            <version>1.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Spring Web is used to deploy the server to a web container. -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.1.5.RELEASE</version>
+        </dependency>
+
+        <!-- You may not need this if you are deploying to an application server -->
+        <!-- which provides database connection pools itself. -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+        <!-- Postgres database driver. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>mitre-fhir-server</finalName>
+
+        <!-- Not required for the application to build. -->
+        <!-- Allows you to run locally by running "mvn jetty:run" from the command line. -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <configuration>
+                        <webApp>
+                            <contextPath>/mitre-fhir-server</contextPath>
+                            <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+                        </webApp>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- Overlay tells the WAR plugin to include the FHIR Tester overlay. -->
+            <!-- You can omit it if you are not using that feature. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.0</version>
+
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Build-Time>${maven.build.timestamp}</Build-Time>
+                        </manifestEntries>
+                    </archive>
+                    <overlays>
+                        <overlay>
+                            <groupId>ca.uhn.hapi.fhir</groupId>
+                            <artifactId>hapi-fhir-testpage-overlay</artifactId>
+                        </overlay>
+                    </overlays>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
