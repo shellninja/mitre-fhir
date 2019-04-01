@@ -107,11 +107,11 @@
         </dependency>
 
         <!-- Spring Web is used to deploy the server to a web container. -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>5.1.5.RELEASE</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-web</artifactId>-->
+            <!--<version>5.1.5.RELEASE</version>-->
+        <!--</dependency>-->
 
         <!-- You may not need this if you are deploying to an application server -->
         <!-- which provides database connection pools itself. -->
@@ -130,7 +130,7 @@
     </dependencies>
 
     <build>
-        <finalName>mitre-fhir-server</finalName>
+        <finalName>mitre-fhir</finalName>
 
         <!-- Not required for the application to build. -->
         <!-- Allows you to run locally by running "mvn jetty:run" from the command line. -->
@@ -139,9 +139,10 @@
                 <plugin>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
+                    <version>9.4.15.v20190215</version>
                     <configuration>
                         <webApp>
-                            <contextPath>/mitre-fhir-server</contextPath>
+                            <contextPath>/mitre-fhir</contextPath>
                             <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
                         </webApp>
                     </configuration>
@@ -156,7 +157,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.0</version>
-
                 <configuration>
                     <archive>
                         <manifestEntries>

@@ -13,21 +13,7 @@
         <param-value>org.mitre.fhir.MitreServerConfig</param-value>
     </context-param>
 
-    <!-- Servlets -->
-
-    <servlet>
-        <servlet-name>spring</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextClass</param-name>
-            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-        </init-param>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>org.mitre.fhir.MitreOverlayConfig</param-value>
-        </init-param>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
+    <!-- API Servlet -->
 
     <servlet>
         <servlet-name>fhirServlet</servlet-name>
@@ -47,6 +33,22 @@
         <servlet-name>fhirServlet</servlet-name>
         <url-pattern>/dstu3/*</url-pattern>
     </servlet-mapping>
+
+    <!-- Tester Overlay Servlet -->
+
+    <servlet>
+        <servlet-name>spring</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>org.mitre.fhir.MitreOverlayConfig</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>spring</servlet-name>
