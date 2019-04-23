@@ -41,7 +41,7 @@ public class MitreJpaServer extends RestfulServer {
     protected void initialize() throws ServletException {
         super.initialize();
 
-        // This will add all the resources available in HAPI DSTU3.
+        // Setup a FHIR context.
         FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
         setFhirContext(new FhirContext(fhirVersion));
 
@@ -72,8 +72,7 @@ public class MitreJpaServer extends RestfulServer {
         setETagSupport(ETagSupportEnum.ENABLED);
 
         // Dynamically generate narratives.
-        // FhirContext ctx = getFhirContext();
-        // ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
+        // getFhirContext().setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
 
         // Default to JSON and pretty printing
         setDefaultPrettyPrint(true);
