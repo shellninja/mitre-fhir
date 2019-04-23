@@ -1,36 +1,26 @@
 package org.mitre.fhir;
 
-import java.util.Map;
-import java.util.Properties;
-
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
+import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
+import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory;
-import ca.uhn.fhir.jpa.util.DerbyTenSevenHapiFhirDialect;
+import ca.uhn.fhir.jpa.util.SubscriptionsRequireManualActivationInterceptorDstu3;
+import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.dialect.PostgreSQL9Dialect;
-import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.hl7.fhir.instance.model.Subscription;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowire;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
-import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.jpa.util.SubscriptionsRequireManualActivationInterceptorDstu3;
-import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Tim Shaffer
@@ -109,15 +99,6 @@ public class MitreServerConfig extends BaseJavaConfigDstu3 {
         properties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
         // extraProperties.put("hibernate.search.default.worker.execution", "async");
         return properties;
-    }
-
-    public IServerInterceptor loggingInterceptor() {
-        LoggingInterceptor interceptor = new LoggingInterceptor();
-        interceptor.setLoggerName("fhirtest.access");
-        interceptor.setMessageFormat("Path[${servletPath}] Source[${requestHeader.x-forwarded-for}] Operation[${operationType} ${operationName} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] ResponseEncoding[${responseEncodingNoDefault}]");
-        interceptor.setLogExceptions(true);
-        interceptor.setErrorMessageFormat("ERROR - ${requestVerb} ${requestUrl}");
-        return interceptor;
     }
 
     @Bean(autowire = Autowire.BY_TYPE)

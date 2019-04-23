@@ -3,32 +3,28 @@ package org.mitre.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
-import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.PatientResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.subscription.SubscriptionInterceptorLoader;
-import ca.uhn.fhir.model.dstu2.composite.MetaDt;
-import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
+import ca.uhn.fhir.validation.IValidatorModule;
+import ca.uhn.fhir.validation.ResultSeverityEnum;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.Patient;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,6 +88,25 @@ public class MitreJpaServer extends RestfulServer {
         // It does not have any security attached (any anonymous user may use it by default).
         // Consider using an AuthorizationInterceptor with this feature.
         registerProvider(appContext.getBean(TerminologyUploaderProviderDstu3.class));
-    }
 
+        // Set a specific Java class for incoming profiles.
+        // getFhirContext().setDefaultTypeForProfile("Profile/CustomPatient", CustomPatient.class);
+
+        // Add logging interceptor.
+        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+        loggingInterceptor.setLoggerName("fhirtest.access");
+        loggingInterceptor.setMessageFormat("Path[${servletPath}] Source[${requestHeader.x-forwarded-for}] Operation[${operationType} ${operationName} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] ResponseEncoding[${responseEncodingNoDefault}]");
+        loggingInterceptor.setLogExceptions(true);
+        loggingInterceptor.setErrorMessageFormat("ERROR - ${requestVerb} ${requestUrl}");
+        registerInterceptor(loggingInterceptor);
+
+        // Validate incoming instances against default profile or custom StructureDefinition.
+        // myInstanceValidatorDstu3 is generated as a part of hapi-fhir-jpaserver-base.
+        IValidatorModule instanceValidator = (IValidatorModule) appContext.getBean("myInstanceValidatorDstu3");
+        RequestValidatingInterceptor validatingInterceptor = new RequestValidatingInterceptor();
+        validatingInterceptor.addValidatorModule(instanceValidator);
+        validatingInterceptor.setFailOnSeverity(ResultSeverityEnum.WARNING);
+        validatingInterceptor.setAddResponseHeaderOnSeverity(ResultSeverityEnum.WARNING);
+        registerInterceptor(validatingInterceptor);
+    }
 }
