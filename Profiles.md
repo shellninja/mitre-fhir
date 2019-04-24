@@ -29,12 +29,12 @@ It's the same as sending this patient (the profile is implied):
       },
       "name": [
         {
-          "family": "AWESOMEUSER",
-          "given": ["John2", "Quincy"]
+          "family": "Adams",
+          "given": ["John", "Quincy"]
         },
         {
-          "family": "AWESOMEUSER",
-          "given": ["John3", "Quincy"]
+          "family": "Adams",
+          "given": ["Alternative", "Name"]
         }
       ]
     }
@@ -106,12 +106,12 @@ Here's an example Patient resource:
       },
       "name": [
         {
-          "family": "AWESOMEUSER",
-          "given": ["John2", "Quincy"]
+          "family": "Adams",
+          "given": ["John", "Quincy"]
         },
         {
-          "family": "AWESOMEUSER",
-          "given": ["John3", "Quincy"]
+          "family": "Adams",
+          "given": ["Alternative", "Name"]
         }
       ]
     }
