@@ -60,7 +60,7 @@ public class MitreServerConfig extends BaseJavaConfigDstu3 {
         String user = environment.getOrDefault("POSTGRES_USER", "postgres");
         String password = environment.getOrDefault("POSTGRES_PASSWORD", "welcome123");
         String database = environment.getOrDefault("POSTGRES_DB", "postgres");
-        String schema = environment.getOrDefault("POSTGRES_SCHEMA", "fhir_data");
+        String schema = environment.getOrDefault("POSTGRES_SCHEMA", "public");
 
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriver(new org.postgresql.Driver());
