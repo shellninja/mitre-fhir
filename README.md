@@ -14,33 +14,49 @@ You can run a Jetty development server locally by using the following command:
 
     mvn jetty:run
 
-This should install depdendencies and spin up a local server at http://localhost:8080/mitre-fhir-server
+This should install dependencies and spin up a local server at http://localhost:8080/mitre-fhir-server
+
+It will try to connect to a Postgres database server, so you will need to have a database server running somewhere.
 
 ## Configuration
 
-All configuration options are controlled by environment variables. Right now, the only configuration is the database connection options. Here are the available options with their defaults:
+All configuration options are controlled by environment variables. 
+Right now, the only configuration is the database connection options. 
+Here are the available options with their defaults:
 
     POSTGRES_HOST=localhost
     POSTGRES_PORT=5432
     POSTGRES_USER=postgres
     POSTGRES_PASSWORD=welcome123
     POSTGRES_DB=postgres
-    POSTGRES_SCHEMA=fhir_data
+    POSTGRES_SCHEMA=public
 
 The server will attempt to create all necessary database tables on startup.
 
+## Building
+
+To build a WAR file that you can deploy, just run a Maven package command:
+
+    mvn package
+
+This will build the WAR file at `./target/mitre-fhir.war`
+
 ## Docker
 
-This might not work right now, but hopefully I can get it running reliably.
+This project uses docker-compose because it's the easiest way to get this up and running.
 
-First, build a docker image tagged as mitre-fhir:
+First, you need to build the WAR file using `mvn package`
 
-    docker build -t mitre-fhir .
+Now you can build the docker images:
 
-Then you should be able to run this image:
+    docker-compose build
 
-    docker run mitre-fhir
+This builds the MITRE FHIR server image and configures a Postgres database image. 
+It automatically configures the two servers to work together. 
+All postgres data will be stored in the `./fhir-pgdata` directory.
 
-You can specify the environment variables on the command line:
+Then you can run both containers:
 
-    docker run -e POSTGRES_DB=fhirdb mitre-fhir
+    docker-compose up
+
+Now you should be able to access your server by going to http://localhost:8080
