@@ -8,6 +8,10 @@ It runs as a Java 11 WAR file that can be deployed to an application server like
 
 It uses JPA for persistence and is configured to connect to a Postgres database.
 
+## Requirements
+JDK 11 https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html
+PostgreSQL (Install referencing the values in configuration below for postgres user account
+
 ## Running Locally
 
 You can run a Jetty development server locally by using the following command:
