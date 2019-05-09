@@ -10,6 +10,7 @@ It uses JPA for persistence and is configured to connect to a Postgres database.
 
 ## Requirements
 JDK 11 https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html
+
 PostgreSQL (Install referencing the values in configuration below for postgres user account
 
 ## Running Locally
